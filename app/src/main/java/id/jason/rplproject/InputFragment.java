@@ -63,12 +63,10 @@ public class InputFragment extends Fragment {
     }
 
     private void saveData() {
-        // PERBAIKAN 1: Ambil string dari EditText dulu sebelum diproses
         String jumlahStr = etQuantity.getText().toString();
         String tanggalStr = etHarvestDate.getText().toString();
         String komoditas = dropdownCommodity.getText().toString();
 
-        // Validasi input kosong
         if (jumlahStr.isEmpty() || tanggalStr.isEmpty() || komoditas.isEmpty()) {
             Toast.makeText(requireContext(), "Harap isi semua kolom!", Toast.LENGTH_SHORT).show();
             return;
@@ -79,36 +77,36 @@ public class InputFragment extends Fragment {
             AppDatabase db = AppDatabase.getInstance(requireContext());
 
             // 1. Simpan Log Transaksi
-            // PERBAIKAN 2: Gunakan constructor kosong (default) agar tidak merah
             TransactionEntity trx = new TransactionEntity();
-            trx.commodityId = 1; // Dummy ID Tomat
+            // Gunakan hashCode dari nama biar ID-nya beda-beda tiap barang
+            trx.commodityId = komoditas.hashCode();
             trx.jenis = "MASUK";
-
-            // PERBAIKAN 3: Pastikan nama field di TransactionEntity adalah 'jumlah'
-            // Jika di Entity-mu namanya 'kuantitas', ganti baris ini jadi: trx.kuantitas = jumlah;
             trx.jumlah = jumlah;
-
             trx.tanggal = System.currentTimeMillis();
-            trx.keterangan = "Panen tgl: " + tanggalStr; // Gunakan tanggalStr agar terbaca manusia
+            trx.keterangan = "Panen " + komoditas + " tgl: " + tanggalStr;
             db.inventoryDao().insertTransaction(trx);
 
-            // 2. Update Saldo Stok
-            StockEntity saldo = db.inventoryDao().getStockByCommodity(1);
+            // 2. Update Saldo Stok (LOGIKA DINAMIS)
+            // Kita cari stok berdasarkan NAMA yang dipilih di dropdown
+            StockEntity saldo = db.inventoryDao().getStockByItemName(komoditas);
+
             if (saldo == null) {
+                // Jika komoditas ini BELUM ADA di database, buat baris baru
                 saldo = new StockEntity();
-                saldo.commodityId = 1;
-                saldo.namaKomoditas = komoditas; // <--- SEKARANG TERPAKAI (Tidak abu-abu lagi)
+                saldo.commodityId = komoditas.hashCode();
+                saldo.namaKomoditas = komoditas;
                 saldo.jumlah = jumlah;
             } else {
+                // Jika SUDAH ADA, tinggal tambahkan jumlahnya
                 saldo.jumlah += jumlah;
-                saldo.namaKomoditas = komoditas; // Update namanya juga biar konsisten
             }
+
             saldo.lastUpdate = System.currentTimeMillis();
             db.inventoryDao().insertOrUpdateStock(saldo);
 
-            Toast.makeText(requireContext(), "Berhasil simpan ke Gudang!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Berhasil simpan " + komoditas + " ke Gudang!", Toast.LENGTH_SHORT).show();
 
-            // Clear input setelah sukses
+            // Clear input
             etQuantity.setText("");
             etHarvestDate.setText("");
             dropdownCommodity.setText("", false);

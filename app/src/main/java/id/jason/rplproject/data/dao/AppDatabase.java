@@ -9,7 +9,7 @@ import id.jason.rplproject.data.entity.StockEntity;
 import id.jason.rplproject.data.entity.SupplierEntity;
 import id.jason.rplproject.data.entity.TransactionEntity;
 
-@Database(entities = {CommodityEntity.class, SupplierEntity.class, TransactionEntity.class, StockEntity.class}, version = 3, exportSchema = false)
+@Database(entities = {CommodityEntity.class, SupplierEntity.class, TransactionEntity.class, StockEntity.class}, version = 6, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase instance;
@@ -21,7 +21,7 @@ public abstract class AppDatabase extends RoomDatabase {
             instance = Room.databaseBuilder(context.getApplicationContext(),
                             AppDatabase.class, "scm_tani_db")
                     .fallbackToDestructiveMigration()
-                    .allowMainThreadQueries() // PENTING: Hanya untuk testing sore ini agar cepat konek
+                    .allowMainThreadQueries()
                     .build();
         }
         return instance;

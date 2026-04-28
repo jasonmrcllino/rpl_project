@@ -12,7 +12,8 @@ import java.util.List;
 
 @Dao
 public interface InventoryDao {
-
+    @Query("SELECT * FROM stocks WHERE namaKomoditas = :name LIMIT 1")
+    StockEntity getStockByItemName(String name);
     @Insert
     void insertCommodity(CommodityEntity commodity);
 
@@ -40,4 +41,10 @@ public interface InventoryDao {
 
     @Query("SELECT * FROM stocks")
     List<StockEntity> getAllStocks();
+    @Query("SELECT SUM(jumlah) FROM stocks")
+    double getTotalStok();
+
+    // OPSI: Kalau mau hitung jumlah transaksi hari ini untuk bagian "Pesanan Baru"
+    @Query("SELECT COUNT(*) FROM transactions")
+    int getTotalTransaksi();
 }

@@ -39,18 +39,22 @@ android {
 }
 
 dependencies {
-    implementation(libs.appcompat)
-    implementation(libs.material)
-    // Baris libs.activity dihapus, diganti sama 3 baris manual ini biar stabil:
-    implementation("androidx.activity:activity:1.9.3")
-    implementation("androidx.core:core-ktx:1.15.0")
-    implementation("androidx.core:core:1.15.0")
-    implementation(libs.constraintlayout)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.ext.junit)
-    androidTestImplementation(libs.espresso.core)
+    // Gunakan satu standar saja (pilih yang manual agar kita yakin versinya)
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.9.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+
+    // Activity & Core (Gunakan versi yang stabil untuk Java)
+    implementation("androidx.activity:activity:1.8.0")
+    implementation("androidx.core:core:1.10.1")
+
+    // Room Database
     val roomVersion = "2.6.1"
     implementation("androidx.room:room-runtime:$roomVersion")
     annotationProcessor("androidx.room:room-compiler:$roomVersion")
 
+    // Testing
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 }
